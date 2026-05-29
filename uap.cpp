@@ -4,18 +4,15 @@ using namespace std;
 
 // Struct node untuk menyimpan data rumah user
 struct Node {
-    int idUser;
+    string idUser;
     string namaPelanggan;
-
     float temperature;
     float humidity;
     int airQuality;
     int smoke;
     float noise;
-
     int monitoringScore;
     string statusRumah;
-
     Node *next;
 };
 
@@ -29,9 +26,7 @@ public:
         pHead = NULL;
     }
 
-    // =========================
-    // Menghitung monitoring score
-    // =========================
+    // ========================= Menghitung monitoring score =========================
     int hitungScore(Node *node) {
         int jumlahIdeal = 0;
 
@@ -59,32 +54,23 @@ public:
         return (jumlahIdeal * 100) / 5;
     }
 
-    // =========================
-    // Fitur tambahan
-    // menentukan status rumah
-    // =========================
+    // ========================= menentukan status rumah =========================
     string cekStatusRumah(int score) {
 
-        // kondisi rumah aman
+        // kondisi rumah nyaman
         if (score >= 81)
-            return "AMAN";
+            return "NYAMAN";
 
-        // kondisi rumah cukup
-        else if (score >= 61)
-            return "CUKUP";
-
-        // kondisi rumah waspada
+        // kondisi rumah kurang nyaman
         else if (score >= 41)
-            return "WASPADA";
+            return "KURANG NYAMAN";
 
-        // kondisi rumah berbahaya
+        // kondisi rumah tidak nyaman
         else
-            return "BERBAHAYA";
+            return "TIDAK NYAMAN";
     }
 
-    // =========================
-    // Validasi range sensor
-    // =========================
+    // ========================= Validasi range sensor =========================
     bool validasiSensor(float temp, float hum, int air,
                         int smoke, float noise) {
 
@@ -106,10 +92,8 @@ public:
         return true;
     }
 
-    // =========================
-    // Mengecek ID duplicate
-    // =========================
-    bool cekId(int idCari) {
+    // ========================= Mengecek ID duplicate =========================
+    bool cekId(string idCari) {
         Node *temp = pHead;
 
         while (temp != NULL) {
@@ -123,9 +107,33 @@ public:
         return false;
     }
 
-    // =========================
-    // Menambahkan user baru
-    // =========================
+    // ========================= Validasi kode wilayah =========================
+    // 023, 021, 034, 042
+    // minimal 4 digit
+    bool cekWilayah(string idUser) {
+
+        if (idUser.length() < 4)
+            return false;
+
+        string kodeWilayah =
+            idUser.substr(0, 3);
+
+        if (kodeWilayah == "023")
+            return true;
+
+        if (kodeWilayah == "021")
+            return true;
+
+        if (kodeWilayah == "034")
+            return true;
+
+        if (kodeWilayah == "042")
+            return true;
+
+        return false;
+    }
+
+    // ========================= Menambahkan user baru =========================
     void tambahUser() {
 
         Node *pNodeBaru = new Node;
@@ -133,9 +141,28 @@ public:
         cout << "\nMasukkan ID User : ";
         cin >> pNodeBaru->idUser;
 
+        // validasi kode wilayah
+        if (!cekWilayah(pNodeBaru->idUser)) {
+
+            cout << "\n## ID User tidak valid";
+            cout << "\n## ID harus diawali:";
+            cout << "\n023";
+            cout << "\n021";
+            cout << "\n034";
+            cout << "\n042";
+            cout << "\n## Minimal 4 digit";
+
+            delete pNodeBaru;
+
+            return;
+        }
+
         // validasi duplicate ID
         if (cekId(pNodeBaru->idUser)) {
             cout << "\n## ID User sudah digunakan";
+
+            delete pNodeBaru;
+
             return;
         }
 
@@ -144,19 +171,19 @@ public:
         cout << "Masukkan Nama Pelanggan : ";
         getline(cin, pNodeBaru->namaPelanggan);
 
-        cout << "Masukkan Temperature : ";
+        cout << "Masukkan Temperature (-10 s/d 50 C) : ";
         cin >> pNodeBaru->temperature;
 
-        cout << "Masukkan Humidity : ";
+        cout << "Masukkan Humidity (0 s/d 100 %) : ";
         cin >> pNodeBaru->humidity;
 
-        cout << "Masukkan Air Quality : ";
+        cout << "Masukkan Air Quality (0 s/d 500 AQI) : ";
         cin >> pNodeBaru->airQuality;
 
-        cout << "Masukkan Smoke (0/1) : ";
+        cout << "Masukkan Smoke (0 = Tidak Ada, 1 = Terdeteksi) : ";
         cin >> pNodeBaru->smoke;
 
-        cout << "Masukkan Noise : ";
+        cout << "Masukkan Noise (0 s/d 120 dB) : ";
         cin >> pNodeBaru->noise;
 
         // validasi range sensor
@@ -168,6 +195,7 @@ public:
             pNodeBaru->noise)) {
 
             cout << "\n## Data sensor tidak valid";
+            delete pNodeBaru;
             return;
         }
 
@@ -205,12 +233,10 @@ public:
              << pNodeBaru->statusRumah << endl;
     }
 
-    // =========================
-    // Mencari user berdasarkan ID
-    // =========================
+    // ========================= Mencari user berdasarkan ID =========================
     void cariUser() {
 
-        int idCari;
+        string idCari;
 
         cout << "\nMasukkan ID User yang dicari : ";
         cin >> idCari;
@@ -236,19 +262,19 @@ public:
                      << temp->statusRumah;
 
                 cout << "\nTemperature      : "
-                     << temp->temperature;
+                     << temp->temperature << " C";
 
                 cout << "\nHumidity         : "
-                     << temp->humidity;
+                     << temp->humidity << " %";
 
                 cout << "\nAir Quality      : "
-                     << temp->airQuality;
+                     << temp->airQuality << " AQI";
 
                 cout << "\nSmoke            : "
                      << temp->smoke;
 
                 cout << "\nNoise            : "
-                     << temp->noise << endl;
+                     << temp->noise << " dB" << endl;
 
                 return;
             }
@@ -259,12 +285,10 @@ public:
         cout << "\n## User tidak ditemukan";
     }
 
-    // =========================
-    // Update data user
-    // =========================
+    // ========================= Update data user =========================
     void updateUser() {
 
-        int idCari;
+        string idCari;
 
         cout << "\nMasukkan ID User yang diupdate : ";
         cin >> idCari;
@@ -280,19 +304,19 @@ public:
                 cout << "Masukkan Nama Baru : ";
                 getline(cin, temp->namaPelanggan);
 
-                cout << "Masukkan Temperature Baru : ";
+                cout << "Masukkan Temperature Baru (-10 s/d 50 C) : ";
                 cin >> temp->temperature;
 
-                cout << "Masukkan Humidity Baru : ";
+                cout << "Masukkan Humidity Baru (0 s/d 100 %) : ";
                 cin >> temp->humidity;
 
-                cout << "Masukkan Air Quality Baru : ";
+                cout << "Masukkan Air Quality Baru (0 s/d 500 AQI) : ";
                 cin >> temp->airQuality;
 
-                cout << "Masukkan Smoke Baru : ";
+                cout << "Masukkan Smoke Baru (0 = Tidak Ada, 1 = Terdeteksi) : ";
                 cin >> temp->smoke;
 
-                cout << "Masukkan Noise Baru : ";
+                cout << "Masukkan Noise Baru (0 s/d 120 dB) : ";
                 cin >> temp->noise;
 
                 // validasi sensor
@@ -330,12 +354,10 @@ public:
         cout << "\n## User tidak ditemukan";
     }
 
-    // =========================
-    // Menghapus user
-    // =========================
+    // ========================= Menghapus user =========================
     void hapusUser() {
 
-        int idCari;
+        string idCari;
 
         cout << "\nMasukkan ID User yang dihapus : ";
         cin >> idCari;
@@ -377,157 +399,131 @@ public:
         cout << "\n## User berhasil dihapus";
     }
 
-    // =========================
-    // Sorting ascending score
+    // ========================= Sorting ascending score =========================
     // menggunakan bubble sort manual
-    // =========================
-// bagian sorting sebelumnya menggunakan swap()
-// diganti manual supaya benar-benar tanpa STL
-// dan lebih sesuai gaya praktikum ASD
+    void sortingScore() {
 
-void sortingScore() {
+        if (pHead == NULL)
+            return;
 
-    if (pHead == NULL)
-        return;
+        bool swapped;
+        Node *ptr1;
+        Node *lptr = NULL;
 
-    bool swapped;
-    Node *ptr1;
-    Node *lptr = NULL;
+        do {
 
-    do {
+            swapped = false;
+            ptr1 = pHead;
 
-        swapped = false;
-        ptr1 = pHead;
+            while (ptr1->next != lptr) {
 
-        while (ptr1->next != lptr) {
+                if (ptr1->monitoringScore >
+                    ptr1->next->monitoringScore) {
 
-            if (ptr1->monitoringScore >
-                ptr1->next->monitoringScore) {
+                    // swap manual idUser
+                    string tempId =
+                        ptr1->idUser;
 
-                // =========================
-                // swap manual idUser
-                // =========================
-                int tempId =
-                    ptr1->idUser;
+                    ptr1->idUser =
+                        ptr1->next->idUser;
 
-                ptr1->idUser =
-                    ptr1->next->idUser;
+                    ptr1->next->idUser =
+                        tempId;
 
-                ptr1->next->idUser =
-                    tempId;
+                    // swap manual nama pelanggan
+                    string tempNama =
+                        ptr1->namaPelanggan;
 
-                // =========================
-                // swap manual nama pelanggan
-                // =========================
-                string tempNama =
-                    ptr1->namaPelanggan;
+                    ptr1->namaPelanggan =
+                        ptr1->next->namaPelanggan;
 
-                ptr1->namaPelanggan =
-                    ptr1->next->namaPelanggan;
+                    ptr1->next->namaPelanggan =
+                        tempNama;
 
-                ptr1->next->namaPelanggan =
-                    tempNama;
+                    // swap manual temperature
+                    float tempTemperature =
+                        ptr1->temperature;
 
-                // =========================
-                // swap manual temperature
-                // =========================
-                float tempTemperature =
-                    ptr1->temperature;
+                    ptr1->temperature =
+                        ptr1->next->temperature;
 
-                ptr1->temperature =
-                    ptr1->next->temperature;
+                    ptr1->next->temperature =
+                        tempTemperature;
 
-                ptr1->next->temperature =
-                    tempTemperature;
+                    // swap manual humidity
+                    float tempHumidity =
+                        ptr1->humidity;
 
-                // =========================
-                // swap manual humidity
-                // =========================
-                float tempHumidity =
-                    ptr1->humidity;
+                    ptr1->humidity =
+                        ptr1->next->humidity;
 
-                ptr1->humidity =
-                    ptr1->next->humidity;
+                    ptr1->next->humidity =
+                        tempHumidity;
 
-                ptr1->next->humidity =
-                    tempHumidity;
+                    // swap manual air quality
+                    int tempAir =
+                        ptr1->airQuality;
 
-                // =========================
-                // swap manual air quality
-                // =========================
-                int tempAir =
-                    ptr1->airQuality;
+                    ptr1->airQuality =
+                        ptr1->next->airQuality;
 
-                ptr1->airQuality =
-                    ptr1->next->airQuality;
+                    ptr1->next->airQuality =
+                        tempAir;
 
-                ptr1->next->airQuality =
-                    tempAir;
+                    // swap manual smoke
+                    int tempSmoke =
+                        ptr1->smoke;
 
-                // =========================
-                // swap manual smoke
-                // =========================
-                int tempSmoke =
-                    ptr1->smoke;
+                    ptr1->smoke =
+                        ptr1->next->smoke;
 
-                ptr1->smoke =
-                    ptr1->next->smoke;
+                    ptr1->next->smoke =
+                        tempSmoke;
 
-                ptr1->next->smoke =
-                    tempSmoke;
+                    // swap manual noise
+                    float tempNoise =
+                        ptr1->noise;
 
-                // =========================
-                // swap manual noise
-                // =========================
-                float tempNoise =
-                    ptr1->noise;
+                    ptr1->noise =
+                        ptr1->next->noise;
 
-                ptr1->noise =
-                    ptr1->next->noise;
+                    ptr1->next->noise =
+                        tempNoise;
 
-                ptr1->next->noise =
-                    tempNoise;
+                    // swap monitoring score
+                    int tempScore =
+                        ptr1->monitoringScore;
 
-                // =========================
-                // swap monitoring score
-                // =========================
-                int tempScore =
-                    ptr1->monitoringScore;
+                    ptr1->monitoringScore =
+                        ptr1->next->monitoringScore;
 
-                ptr1->monitoringScore =
-                    ptr1->next->monitoringScore;
+                    ptr1->next->monitoringScore =
+                        tempScore;
 
-                ptr1->next->monitoringScore =
-                    tempScore;
+                    // swap status rumah
+                    string tempStatus =
+                        ptr1->statusRumah;
 
-                // =========================
-                // swap status rumah
-                // =========================
-                string tempStatus =
-                    ptr1->statusRumah;
+                    ptr1->statusRumah =
+                        ptr1->next->statusRumah;
 
-                ptr1->statusRumah =
-                    ptr1->next->statusRumah;
+                    ptr1->next->statusRumah =
+                        tempStatus;
 
-                ptr1->next->statusRumah =
-                    tempStatus;
+                    swapped = true;
+                }
 
-                swapped = true;
+                ptr1 = ptr1->next;
             }
 
-            ptr1 = ptr1->next;
-        }
+            lptr = ptr1;
 
-        lptr = ptr1;
+        } while (swapped);
+    }
 
-    } while (swapped);
-}
-
-    // =========================
-    // Menampilkan laporan
-    // =========================
+    // ========================= Menampilkan laporan =========================
     void showLaporan() {
-
+        
         if (pHead == NULL) {
             cout << "\n## Data masih kosong";
             return;
@@ -541,6 +537,9 @@ void sortingScore() {
         int totalUser = 0;
         int totalScore = 0;
 
+        int idealUser = 0;
+        int tidakIdealUser = 0;
+
         int tempIdeal = 0;
         int humIdeal = 0;
         int airIdeal = 0;
@@ -553,6 +552,11 @@ void sortingScore() {
             totalUser++;
 
             totalScore += temp->monitoringScore;
+
+            if (temp->monitoringScore == 100)
+                idealUser++;
+            else
+                tidakIdealUser++;
 
             if (temp->temperature >= 20 &&
                 temp->temperature <= 27)
@@ -580,11 +584,19 @@ void sortingScore() {
         cout << "\nLAPORAN MONITORING IOT";
         cout << "\n===================================";
 
+        cout << "\n\nStatistik Monitoring";
+
+        cout << "\nJumlah User Dengan Pembacaan Ideal : "
+             << idealUser;
+
+        cout << "\nJumlah User Dengan Pembacaan Tidak Ideal : "
+             << tidakIdealUser;
+
         cout << "\n\nTotal Pelanggan : "
              << totalUser;
 
         cout << "\nRata-rata Score : "
-             << totalScore / totalUser << "%";
+             << (float)totalScore / totalUser << "%";
 
         cout << "\n\nRekap Sensor Ideal";
         cout << "\nTemperature : "
@@ -611,7 +623,7 @@ void sortingScore() {
 
             cout << "\n\n-----------------------------------";
 
-            cout << "\nPeringkat "
+            cout << "\nUrutan Ke-"
                  << ranking;
 
             cout << "\nUser ID          : "
@@ -629,19 +641,19 @@ void sortingScore() {
             cout << "\n\nData Sensor";
 
             cout << "\nTemperature : "
-                 << temp->temperature;
+                 << temp->temperature << " C";
 
             cout << "\nHumidity    : "
-                 << temp->humidity;
+                 << temp->humidity << " %";
 
             cout << "\nAir Quality : "
-                 << temp->airQuality;
+                 << temp->airQuality << " AQI";
 
             cout << "\nSmoke       : "
                  << temp->smoke;
 
             cout << "\nNoise       : "
-                 << temp->noise;
+                 << temp->noise << " dB";
 
             ranking++;
             temp = temp->next;
@@ -650,9 +662,7 @@ void sortingScore() {
         cout << endl;
     }
 
-    // =========================
-    // Destructor
-    // =========================
+    // ========================= Destructor =========================
     ~MonitoringIoT() {
 
         Node *pKini = pHead;
