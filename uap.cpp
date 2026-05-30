@@ -313,6 +313,7 @@ public:
             if (temp->idUser == idCari) {
                 
                 //temp buat nyimpan data sebelum dimasukkan ke node asli
+                string tempNama;
                 float tempTemperature;
                 float tempHumidity;
                 int tempAirQuality;
@@ -322,7 +323,7 @@ public:
                 cin.ignore();
 
                 cout << "Masukkan Nama Baru : ";
-                getline(cin, temp->namaPelanggan);
+                getline(cin, tempNama);
 
                 cout << "\nMasukkan Temperature Baru (-10 s/d 50 C) : ";
                 cin >> tempTemperature;
@@ -349,7 +350,8 @@ public:
                     cout << "\n## Data sensor tidak valid";
                     return;
                 }
-
+                
+                temp->namaPelanggan = tempNama;
                 temp->temperature = tempTemperature;
                 temp->humidity = tempHumidity;
                 temp->airQuality = tempAirQuality;
