@@ -58,11 +58,11 @@ public:
     string cekStatusRumah(int score) {
 
         // kondisi rumah nyaman
-        if (score >= 81)
+        if (score >= 80)
             return "NYAMAN";
 
         // kondisi rumah kurang nyaman
-        else if (score >= 41)
+        else if (score >= 40)
             return "KURANG NYAMAN";
 
         // kondisi rumah tidak nyaman
