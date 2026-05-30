@@ -1,0 +1,1 @@
+ int hitungScore(Node *node)

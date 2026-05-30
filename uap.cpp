@@ -138,6 +138,19 @@ public:
 
         Node *pNodeBaru = new Node;
 
+        cout << "\n===================================";
+        cout << "\nKode Wilayah yang Tersedia";
+        cout << "\n===================================";
+        cout << "\n023";
+        cout << "\n021";
+        cout << "\n034";
+        cout << "\n042";
+        cout << "\n===================================";
+        cout << "\nFormat ID : [KodeWilayah][NomorUser]";
+        cout << "\nContoh    : 0231, 0215, 0347";
+        cout << "\nMinimal 4 digit";
+        cout << "\n===================================\n";
+
         cout << "\nMasukkan ID User : ";
         cin >> pNodeBaru->idUser;
 
@@ -298,38 +311,50 @@ public:
         while (temp != NULL) {
 
             if (temp->idUser == idCari) {
+                
+                //temp buat nyimpan data sebelum dimasukkan ke node asli
+                float tempTemperature;
+                float tempHumidity;
+                int tempAirQuality;
+                int tempSmoke;
+                float tempNoise;
 
                 cin.ignore();
 
                 cout << "Masukkan Nama Baru : ";
                 getline(cin, temp->namaPelanggan);
 
-                cout << "Masukkan Temperature Baru (-10 s/d 50 C) : ";
-                cin >> temp->temperature;
+                cout << "\nMasukkan Temperature Baru (-10 s/d 50 C) : ";
+                cin >> tempTemperature;
 
                 cout << "Masukkan Humidity Baru (0 s/d 100 %) : ";
-                cin >> temp->humidity;
+                cin >> tempHumidity;
 
                 cout << "Masukkan Air Quality Baru (0 s/d 500 AQI) : ";
-                cin >> temp->airQuality;
+                cin >> tempAirQuality;
 
                 cout << "Masukkan Smoke Baru (0 = Tidak Ada, 1 = Terdeteksi) : ";
-                cin >> temp->smoke;
+                cin >> tempSmoke;
 
                 cout << "Masukkan Noise Baru (0 s/d 120 dB) : ";
-                cin >> temp->noise;
-
+                cin >> tempNoise;
                 // validasi sensor
                 if (!validasiSensor(
-                    temp->temperature,
-                    temp->humidity,
-                    temp->airQuality,
-                    temp->smoke,
-                    temp->noise)) {
-
+                    tempTemperature,
+                    tempHumidity,
+                    tempAirQuality,
+                    tempSmoke,
+                    tempNoise))
+                {
                     cout << "\n## Data sensor tidak valid";
                     return;
                 }
+
+                temp->temperature = tempTemperature;
+                temp->humidity = tempHumidity;
+                temp->airQuality = tempAirQuality;
+                temp->smoke = tempSmoke;
+                temp->noise = tempNoise;
 
                 // hitung ulang score
                 temp->monitoringScore = hitungScore(temp);
